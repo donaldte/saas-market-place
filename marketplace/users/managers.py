@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 class UserManager(DjangoUserManager["User"]):
     """Custom manager for the User model."""
 
-    def _create_user(self, email: str, password: str | None, **extra_fields):
+    def _create_user(self, email: str, password: str, **extra_fields):
         """
         Create and save a user with the given email and password.
         """
@@ -23,14 +23,16 @@ class UserManager(DjangoUserManager["User"]):
         user.save(using=self._db)
         return user
 
-    def create_user(self, email: str, password: str | None = None, **extra_fields):  # type: ignore[override]
+    def create_user(self, email: str, password: str , **extra_fields):  # type: ignore[override]
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
         return self._create_user(email, password, **extra_fields)
 
-    def create_superuser(self, email: str, password: str | None = None, **extra_fields):  # type: ignore[override]
+    def create_superuser(self, email: str, password: str , **extra_fields):  # type: ignore[override]
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("is_active", True)
+        extra_fields.setdefault('is_admin', True)
 
         if extra_fields.get("is_staff") is not True:
             msg = "Superuser must have is_staff=True."
@@ -40,3 +42,4 @@ class UserManager(DjangoUserManager["User"]):
             raise ValueError(msg)
 
         return self._create_user(email, password, **extra_fields)
+
